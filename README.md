@@ -50,6 +50,40 @@ bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
 rm -rf ~/miniconda3/miniconda.sh
 ```
 
+**添加 Conda 到 `PATH` 环境变量**
+
+在安装 Miniconda3 后，你需要将 Conda 的路径添加到你的 `PATH` 环境变量中。可以通过编辑你的 shell 配置文件来实现，比如 `.bashrc`、`.zshrc` 或 `.profile` 等。
+
+1. 编辑 `.bashrc` 文件：
+
+   ```bash
+   nano ~/.bashrc
+   ```
+
+2. 在文件末尾添加以下行：
+
+   ```bash
+   export PATH="$HOME/miniconda3/bin:$PATH"
+   ```
+
+3. 保存并退出编辑器（按 `Ctrl + O` 保存，然后按 `Ctrl + X` 退出）。
+
+4. 重新加载 `.bashrc` 文件以应用更改：
+
+   ```bash
+   source ~/.bashrc
+   ```
+
+2. 验证 Conda 安装
+
+重新加载配置文件后，验证 Conda 是否安装成功并且可用：
+
+```bash
+conda --version
+```
+
+你应该看到 Conda 的版本信息。
+
 安装完成后，建议新建一个 Python 虚拟环境，命名为 `langchain`。
 
 ```shell
@@ -94,6 +128,7 @@ jupyter lab --generate-config
 打开上面执行输出的`jupyter_lab_config.py`配置文件后，修改以下配置项：
 
 ```python
+# 默认位置：/root/.jupyter/jupyter_lab_config.py
 c.ServerApp.allow_root = True # 非 root 用户启动，无需修改
 c.ServerApp.ip = '*'
 ```
@@ -101,11 +136,70 @@ c.ServerApp.ip = '*'
 使用 nohup 后台启动 Jupyter Lab
 ```shell
 $ nohup jupyter lab --port=8000 --NotebookApp.token='替换为你的密码' --notebook-dir=./ &
+
+# 示例
+nohup jupyter lab --port=8000 --NotebookApp.token='fly123' --notebook-dir=./ &
 ```
 
 Jupyter Lab 输出的日志将会保存在 `nohup.out` 文件（已在 .gitignore中过滤）。
 
+# 设置Jupyterlab开机自启动（可选）
 
+修改`Jupyter Lab `配置文件`/root/.jupyter/jupyter_lab_config.py`
+
+```python
+# 允许 root 用户启动
+c.ServerApp.allow_root = True
+
+# 考虑修改服务器默认目录
+c.ServerApp.root_dir= '/root/AI-Box/code/jike-peng-openai-quickstart'
+
+# 修改默认端口，以免被别人进入自己的notebook
+# 尤其是服务器，要修改端口避免冲突
+c.ServerApp.port = 8000
+
+# 设置notebook可登陆的ip, 全0为不限制
+c.ServerApp.ip = '0.0.0.0'
+
+# 关闭登陆密码，确保本地安全才可以，否则切勿关闭
+c.ServerApp.token = 'fly123'
+
+```
+
+> 以服务的形式，配置开机启动项
+
+```shell
+sudo vim /etc/systemd/system/jupyter.service
+```
+
+添加如下代码：
+
+- root为我的用户名，注意修改
+- jupyter-lab路径，可通过 `which jupyter-lab`查看
+- WorkingDirectory 可自行设定
+
+```bash
+[Unit]
+Description=Jupyterlab
+After=network.target
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/jupyter-lab --config=/root/.jupyter/jupyter_lab_config.py --no-browser
+User=root
+Group=root
+WorkingDirectory=/root/AI-Box/code/jike-peng-openai-quickstart
+Restart=always
+RestartSec=10
+[Install]
+WantedBy=multi-user.target
+```
+
+设置自启动
+
+```shell
+sudo systemctl enable jupyter
+sudo systemctl start jupyter
+```
 
 
 ## 课程表
