@@ -58,3 +58,22 @@ jupyter lab
 这将启动Jupyter Lab并在你的默认网络浏览器中打开它。
 
 现在，你已经准备好开始使用OpenAI API进行开发了！
+
+### 5. Git提交回滚
+
+```bash
+1. git log // 查询要回滚的 commit_id
+2. git reset --hard commit_id // HEAD 就会指向此次的提交记录
+3. git push origin HEAD --force // 强制推送到远端
+
+```
+
+
+
+### 6. 参考
+
+- [OpenAI Models 列表](https://platform.openai.com/docs/models/embeddings)
+- [pycharm使用sftp同步服务器](https://blog.csdn.net/weixin_44536804/article/details/123289993)
+- [GitHub 安全保护](https://github.com/settings/security_analysis)
+- [GitHub 删除某次 commit](https://blog.csdn.net/lianshaohua/article/details/108336436)
+
